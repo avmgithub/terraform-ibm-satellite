@@ -1,0 +1,2 @@
+#terraform plan -var-file=./input.tfvars
+terraform apply -var-file=./input.tfvars -auto-approve
