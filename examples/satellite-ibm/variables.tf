@@ -2,8 +2,14 @@
 # IBMCLOUD Authentication and Target Variables.
 # The region variable is common across zones used to setup VSI Infrastructure and Satellite host.
 #################################################################################################
+
+variable "ibmcloud_api_key" {
+  description = "IBM Cloud API Key"
+  type        = string
+}
 variable "ibm_region" {
   description = "Region of the IBM Cloud account. Currently supported regions for satellite are us-east and eu-gb region."
+  type        = string
   default     = "us-east"
 }
 
@@ -50,13 +56,24 @@ variable "is_location_exist" {
 variable "host_labels" {
   description = "Labels to add to attach host script"
   type        = list(string)
-  default     = ["env:prod"]
+  default     = null
 
   validation {
     condition     = can([for s in var.host_labels : regex("^[a-zA-Z0-9:]+$", s)])
     error_message = "Label must be of the form `key:value`."
   }
 }
+
+# variable "host_labels" {
+#   description = "Labels to add to attach host script"
+#   type        = list(string)
+#   default     = null
+
+#   validation {
+#     condition     = can([for s in var.host_labels : regex("^[a-zA-Z0-9:]+$", s)])
+#     error_message = "Label must be of the form `key:value`."
+#   }
+# }
 
 ##################################################
 # IBMCLOUD VPC VSI Variables
@@ -79,49 +96,93 @@ variable "cp_hosts" {
     object(
       {
         instance_type = string
-        count         = number
+        host_number   = number
+        node_type     = string
+        zone          = number # 1 or 2 or 3 only
       }
     )
   )
   default = [
     {
       instance_type = "mx2-8x64"
-      count         = 3
+      host_number   = 1
+      node_type     = "controlplane"
+      zone          = 1
+    },
+    {
+      instance_type = "mx2-8x64"
+      host_number   = 2
+      node_type     = "controlplane"
+      zone          = 2
+    },
+    {
+      instance_type = "mx2-8x64"
+      host_number   = 3
+      node_type     = "controlplane"
+      zone          = 3
     }
   ]
 
   validation {
-    condition     = ! contains([for host in var.cp_hosts : (host.count > 0)], false)
-    error_message = "All hosts must have a count of at least 1."
+    condition     = ! contains([for host in var.cp_hosts : (host.host_number > 0)], false)
+    error_message = "All hosts must have host_number greater than 0."
   }
-  validation {
-    condition     = ! contains([for host in var.cp_hosts : (host.count % 3 == 0)], false)
-    error_message = "Count value for all hosts should always be in multiples of 3, such as 6, 9, or 12 hosts."
-  }
+  # validation {
+  #   condition     = ! contains([(length(var.cp_hosts) % 3 == 0)], false)
+  #   error_message = "Count value for all hosts should always be in multiples of 3, such as 6, 9, or 12 hosts."
+  # }
 
   validation {
     condition     = can([for host in var.cp_hosts : host.instance_type])
     error_message = "Each object should have an instance_type."
   }
 }
-variable "addl_hosts" {
+variable "worker_hosts" {
   description = "A list of IBM host objects used for provisioning services on your location after setup, including instance_type and count."
   type = list(
     object(
       {
         instance_type = string
-        count         = number
+        host_number   = number
+        node_type     = string
+        zone          = number # 1 or 2 or 3 only 
       }
     )
   )
   default = []
   validation {
-    condition     = ! contains([for host in var.addl_hosts : (host.count > 0)], false)
-    error_message = "All hosts must have a count of at least 1."
+    condition     = ! contains([for host in var.worker_hosts : (host.host_number >= 1)], false)
+    error_message = "All hosts must have a host_number equal or greater than 1."
+  }
+  validation {
+    condition     = ! contains([(length(var.worker_hosts) % 3 == 0)], false)
+    error_message = "Count value for all hosts should always be in multiples of 3, such as 6, 9, or 12 hosts."
+  }
+  validation {
+    condition     = can([for host in var.worker_hosts : host.instance_type])
+    error_message = "Each object should have an instance_type."
+  }
+}
+variable "storage_hosts" {
+  description = "A list of IBM host objects used for provisioning services on your location after setup, including instance_type and count."
+  type = list(
+    object(
+      {
+        instance_type = string
+        host_number   = number
+        node_type     = string
+        zone          = number # 1 or 2 or 3 only
+      }
+    )
+  )
+  default = []
+  validation {
+    condition     = ! contains([for host in var.storage_hosts : (host.host_number >= 1)], false)
+    error_message = "All hosts must have a host_number equal or greater than 1."
   }
 
   validation {
-    condition     = can([for host in var.addl_hosts : host.instance_type])
+    condition     = can([for host in var.storage_hosts : host.instance_type])
     error_message = "Each object should have an instance_type."
   }
 }
@@ -183,11 +244,11 @@ variable "cluster" {
 
 variable "kube_version" {
   description = "Satellite Kube Version"
-  default     = "4.7_openshift"
+  default     = "4.9.54_openshift"
 }
 
 variable "worker_count" {
-  description = "Worker Count for default pool"
+  description = "Worker Count for default pool per zone"
   type        = number
   default     = 1
 }
@@ -240,7 +301,7 @@ variable "create_cluster_worker_pool" {
 variable "worker_pool_name" {
   description = "Satellite Location Name"
   type        = string
-  default     = "satellite-worker-pool"
+  default     = "storage"
 
   validation {
     error_message = "Cluster name must begin and end with a letter and contain only letters, numbers, and - characters."
@@ -252,7 +313,7 @@ variable "worker_pool_name" {
 variable "worker_pool_host_labels" {
   description = "Labels to add to attach host script"
   type        = list(string)
-  default     = ["env:prod"]
+  default     =  ["type:compute" ]
 
   validation {
     condition     = can([for s in var.worker_pool_host_labels : regex("^[a-zA-Z0-9:]+$", s)])

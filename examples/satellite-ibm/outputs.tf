@@ -15,13 +15,13 @@ output "host_ids" {
   value = [for host in ibm_is_instance.ibm_host : host.id]
 }
 
-output "floating_ip_ids" {
-  value = [for ip in ibm_is_floating_ip.satellite_ip : ip.id]
-}
+# output "floating_ip_ids" {
+#   value = [for ip in ibm_is_floating_ip.satellite_ip : ip.id]
+# }
 
-output "floating_ip_addresses" {
-  value = [for ip in ibm_is_floating_ip.satellite_ip : ip.address]
-}
+# output "floating_ip_addresses" {
+#   value = [for ip in ibm_is_floating_ip.satellite_ip : ip.address]
+# }
 
 output "vpc" {
   value = ibm_is_vpc.satellite_vpc.id

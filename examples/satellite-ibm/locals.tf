@@ -78,40 +78,91 @@ locals {
     }
   ]
 
-  hosts = (var.host_count != null && var.addl_host_count != null && var.location_profile != null) ? {
-    0 = {
-      instance_type     = var.location_profile
-      count             = var.host_count
+  # hosts = merge({
+  #     for i, host in var.cp_hosts :
+  #     i => {
+  #       instance_type     = host.instance_type
+  #       count             = 1
+  #       for_control_plane = true
+  #       node_type         = host.node_type
+  #       zone              = host.zone
+  #       host_number       = host.host_number
+  #       additional_labels = ["host:cp"]
+  #     }
+  #     }, {
+  #     for i, host in var.worker_hosts :
+  #     sum([i, length(var.cp_hosts)]) => {
+  #       instance_type     = host.instance_type
+  #       count             = 1
+  #       for_control_plane = false
+  #       node_type         = host.node_type
+  #       zone              = host.zone
+  #       host_number       = host.host_number
+  #       additional_labels = ["type:worker"]
+  #     }
+  #     }, {
+  #     for i, host in var.storage_hosts :
+  #     sum([i, length(var.cp_hosts), length(var.worker_hosts)]) => {
+  #       instance_type     = host.instance_type
+  #       count             = 1
+  #       for_control_plane = false
+  #       node_type         = host.node_type
+  #       zone              = host.zone
+  #       host_number       = host.host_number
+  #       additional_labels = [ "type:storage" ]
+  #     } 
+  # })
+
+  hosts_cp = {
+    for i, host in var.cp_hosts :
+    i => {
+      instance_type     = host.instance_type
+      count             = 1
       for_control_plane = true
+      node_type         = host.node_type
+      zone              = host.zone
+      host_number       = host.host_number
+      additional_labels = ["host:cp"]
     }
-    1 = {
-      instance_type     = var.cluster_profile
-      count             = var.addl_host_count
+  }
+
+  hosts_wn = {
+    for i, host in var.worker_hosts : i => {
+      instance_type     = host.instance_type
+      count             = 1
       for_control_plane = false
+      node_type         = host.node_type
+      zone              = host.zone
+      host_number       = host.host_number
+      additional_labels = ["type:worker"]
     }
-    } : merge({
-      for i, host in var.cp_hosts :
-      i => {
-        instance_type     = host.instance_type
-        count             = host.count
-        for_control_plane = true
-      }
-      }, {
-      for i, host in var.addl_hosts :
-      sum([i, length(var.cp_hosts)]) => {
-        instance_type     = host.instance_type
-        count             = host.count
-        for_control_plane = false
-      }
-  })
+  } 
+      
+  hosts_sn = {
+    for i, host in var.storage_hosts : i => {
+      instance_type     = host.instance_type
+      count             = 1
+      for_control_plane = false
+      node_type         = host.node_type
+      zone              = host.zone
+      host_number       = host.host_number
+      additional_labels = [ "type:storage" ]
+    } 
+  }
+
+
   // convert hosts to be a flat object with one key per desired host
   hosts_flattened = { for index, item in flatten([
-    for host_index, host in local.hosts : [
+    for host_index, host in local.hosts_cp : [
       for count_index in range(0, host.count) : {
         instance_type     = host.instance_type
         for_control_plane = host.for_control_plane
-        zone              = element(local.zones, count_index)
+        node_type         = host.node_type
+        zone              = host.zone
+        host_number       = host.host_number
+        additional_labels = host.additional_labels
       }
     ]
   ]) : index => item }
+
 }
