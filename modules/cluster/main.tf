@@ -13,6 +13,10 @@ data "ibm_resource_group" "rg_cluster" {
 resource "ibm_satellite_cluster" "create_cluster" {
   count = var.create_cluster ? 1 : 0
 
+ lifecycle {
+      ignore_changes  = [resource_group_id]
+    }
+
   name                   = var.cluster
   location               = var.location
   resource_group_id      = data.ibm_resource_group.rg_cluster.id

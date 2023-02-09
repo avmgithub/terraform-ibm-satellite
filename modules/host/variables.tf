@@ -20,6 +20,10 @@ variable "location_zones" {
   default     = null
 }
 
+variable "zone" {
+  description = "Zone number : 1 or 2 or 3"
+  type        = number
+}
 variable "host_vms" {
   description = "A list of hostnames to attach for setting up location control plane."
   type        = list(string)
