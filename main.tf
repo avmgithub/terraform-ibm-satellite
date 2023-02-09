@@ -79,3 +79,19 @@ module "satellite-cluster-worker-pool" {
   delete_timeout             = var.delete_timeout
   depends_on                 = [module.satellite-cluster]
 }
+
+resource "ibm_resource_instance" "location_cos_instance" {
+  name              = "${is_prefix}-location-cos-instance"
+  resource_group_id = var.resource_group.id
+  service           = "cloud-object-storage"
+  plan              = "standard"
+  location          = "global"
+}
+
+resource "ibm_cos_bucket" "location_cos_bucket_standard" {
+  bucket_name           = "${is_prefix}-location-cos-bucket-standard-1"
+  resource_instance_id  = ibm_resource_instance.location_cos_instance.id
+#  cross_region_location = var.COS_REGION
+  region_location 	    = var.region
+  storage_class         = "standard"
+}

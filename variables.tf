@@ -120,7 +120,7 @@ variable "cluster" {
 
 variable "kube_version" {
   description = "Kube Version"
-  default     = "4.7_openshift"
+  default     = "4.9.52_openshift"
 }
 
 variable "cluster_host_labels" {
