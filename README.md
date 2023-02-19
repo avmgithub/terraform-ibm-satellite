@@ -174,3 +174,5 @@ To destroy the VPC and all related resources
 `terraform destroy -var-file=./input.tfvars`
 
 All optional parameters by default will be set to null in respective example's varaible.tf file. If user wants to configure any optional paramter he has overwrite the default value.
+
+
