@@ -22,6 +22,7 @@ resource "ibm_satellite_cluster_worker_pool" "create_cluster_wp" {
   count = var.create_cluster_worker_pool ? 1 : 0
 
   name               = var.worker_pool_name
+  operating_system   = var.operating_system
   cluster            = data.ibm_satellite_cluster.read_cluster.0.id
   resource_group_id  = data.ibm_resource_group.rg_wp.id
   worker_count       = (var.worker_count != null ? var.worker_count : null)

@@ -34,6 +34,10 @@ variable "kube_version" {
   description = "Satellite Kube Version"
 }
 
+variable "operating_system" {
+  type        = string
+  description = "OpenShift OS used for satellite"
+}
 variable "resource_group" {
   description = "Resource Group Name that has to be targeted"
   type        = string

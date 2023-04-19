@@ -85,3 +85,9 @@ variable "delete_timeout" {
   description = "Timeout duration for delete."
   default     = null
 }
+
+variable "operating_system" {
+  type        = string
+  description = "Satellite Kube Version"
+  default     = "RHCOS"
+}
