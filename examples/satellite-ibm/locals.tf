@@ -115,30 +115,102 @@ locals {
   #     } 
   # })
 
+  # hosts_cp = {
+  #   for i, host in var.cp_hosts :
+  #   i => {
+  #     instance_type     = host.instance_type
+  #     count             = 1
+  #     for_control_plane = true
+  #     node_type         = host.node_type
+  #     zone              = host.zone
+  #     host_number       = host.host_number
+  #     additional_labels = ["host:cp"]
+  #   }
+  # }
+
   hosts_cp = {
-    for i, host in var.cp_hosts :
-    i => {
-      instance_type     = host.instance_type
-      count             = 1
-      for_control_plane = true
-      node_type         = host.node_type
-      zone              = host.zone
-      host_number       = host.host_number
-      additional_labels = ["host:cp"]
-    }
+  "controlplane-1" = {
+    "additional_labels" = [
+      "host:cp",
+    ]
+    "count" = 1
+    "for_control_plane" = true
+    "host_number" = 1
+    "instance_type" = "mx2-8x64"
+    "node_type" = "controlplane"
+    "zone" = 1
   }
+  "controlplane-2" = {
+    "additional_labels" = [
+      "host:cp",
+    ]
+    "count" = 1
+    "for_control_plane" = true
+    "host_number" = 2
+    "instance_type" = "mx2-8x64"
+    "node_type" = "controlplane"
+    "zone" = 2
+  }
+  "controlplane-3" = {
+    "additional_labels" = [
+      "host:cp",
+    ]
+    "count" = 1
+    "for_control_plane" = true
+    "host_number" = 3
+    "instance_type" = "mx2-8x64"
+    "node_type" = "controlplane"
+    "zone" = 3
+  }
+}
+
+  # hosts_wn = {
+  #   for i, host in var.worker_hosts : i => {
+  #     instance_type     = host.instance_type
+  #     count             = 1
+  #     for_worker_node   = true
+  #     node_type         = host.node_type
+  #     zone              = host.zone
+  #     host_number       = host.host_number
+  #     additional_labels = ["type:worker"]
+  #   }
+  # } 
 
   hosts_wn = {
-    for i, host in var.worker_hosts : i => {
-      instance_type     = host.instance_type
-      count             = 1
-      for_worker_node   = true
-      node_type         = host.node_type
-      zone              = host.zone
-      host_number       = host.host_number
-      additional_labels = ["type:worker"]
-    }
-  } 
+  "worker-1" = {
+    "additional_labels" = [
+      "type:worker",
+    ]
+    "count" = 1
+    "for_worker_node" = true
+    "host_number" = 1
+    "instance_type" = "mx2-8x64"
+    "node_type" = "workernode"
+    "zone" = 1
+  }
+  "worker-2" = {
+    "additional_labels" = [
+      "type:worker",
+    ]
+    "count" = 1
+    "for_worker_node" = true
+    "host_number" = 2
+    "instance_type" = "mx2-8x64"
+    "node_type" = "workernode"
+    "zone" = 2
+  }
+  "worker-3" = {
+    "additional_labels" = [
+      "type:worker",
+    ]
+    "count" = 1
+    "for_worker_node" = true
+    "host_number" = 3
+    "instance_type" = "mx2-8x64"
+    "node_type" = "workernode"
+    "zone" = 3
+  }
+}
       
   hosts_sn = {
     for i, host in var.storage_hosts : i => {
@@ -154,17 +226,17 @@ locals {
 
 
   // convert hosts to be a flat object with one key per desired host
-  hosts_flattened = { for index, item in flatten([
-    for host_index, host in local.hosts_cp : [
-      for count_index in range(0, host.count) : {
-        instance_type     = host.instance_type
-        for_control_plane = host.for_control_plane
-        node_type         = host.node_type
-        zone              = host.zone
-        host_number       = host.host_number
-        additional_labels = host.additional_labels
-      }
-    ]
-  ]) : index => item }
+  # hosts_flattened = { for index, item in flatten([
+  #   for host_index, host in local.hosts_cp : [
+  #     for count_index in range(0, host.count) : {
+  #       instance_type     = host.instance_type
+  #       for_control_plane = host.for_control_plane
+  #       node_type         = host.node_type
+  #       zone              = host.zone
+  #       host_number       = host.host_number
+  #       additional_labels = host.additional_labels
+  #     }
+  #   ]
+  # ]) : index => item }
 
 }

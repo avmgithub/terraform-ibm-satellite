@@ -95,38 +95,39 @@ variable "addl_host_count" {
   default     = null
 }
 
-variable "cp_hosts" {
-  description = "A map of IBM host objects used to create the location control plane, including instance_type and count. Control plane count value should always be in multiples of 3, such as 3, 6, 9, or 12 hosts."
-  type = list(
-    object(
-      {
-        instance_type = string
-        host_number   = number
-        node_type     = string
-        zone          = number # 1 or 2 or 3 only
-      }
-    )
-  )
-  default = [
-    {
-      instance_type = "mx2-8x64"
-      host_number   = 1
-      node_type     = "controlplane"
-      zone          = 1
-    },
-    {
-      instance_type = "mx2-8x64"
-      host_number   = 2
-      node_type     = "controlplane"
-      zone          = 2
-    },
-    {
-      instance_type = "mx2-8x64"
-      host_number   = 3
-      node_type     = "controlplane"
-      zone          = 3
-    }
-  ]
+variable "cp_hosts" {}
+/*
+  # description = "A map of IBM host objects used to create the location control plane, including instance_type and count. Control plane count value should always be in multiples of 3, such as 3, 6, 9, or 12 hosts."
+  # type = list(
+  #   object(
+  #     {
+  #       instance_type = string
+  #       host_number   = number
+  #       node_type     = string
+  #       zone          = number # 1 or 2 or 3 only
+  #     }
+  #   )
+  # )
+  # default = [
+  #   {
+  #     instance_type = "mx2-8x64"
+  #     host_number   = 1
+  #     node_type     = "controlplane"
+  #     zone          = 1
+  #   },
+  #   {
+  #     instance_type = "mx2-8x64"
+  #     host_number   = 2
+  #     node_type     = "controlplane"
+  #     zone          = 2
+  #   },
+  #   {
+  #     instance_type = "mx2-8x64"
+  #     host_number   = 3
+  #     node_type     = "controlplane"
+  #     zone          = 3
+  #   }
+  # ]
 
   validation {
     condition     = ! contains([for host in var.cp_hosts : (host.host_number > 0)], false)
@@ -141,8 +142,9 @@ variable "cp_hosts" {
     condition     = can([for host in var.cp_hosts : host.instance_type])
     error_message = "Each object should have an instance_type."
   }
-}
-variable "worker_hosts" {
+}*/
+variable "worker_hosts" {}
+/*
   description = "A list of IBM host objects used for provisioning services on your location after setup, including instance_type and count."
   type = list(
     object(
@@ -168,6 +170,7 @@ variable "worker_hosts" {
     error_message = "Each object should have an instance_type."
   }
 }
+*/
 variable "storage_hosts" {
   description = "A list of IBM host objects used for provisioning services on your location after setup, including instance_type and count."
   type = list(
