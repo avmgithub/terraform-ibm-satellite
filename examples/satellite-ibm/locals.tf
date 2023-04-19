@@ -2,6 +2,8 @@ locals {
   zones      = ["${var.ibm_region}-1", "${var.ibm_region}-2", "${var.ibm_region}-3"]
   subnet_ids = [ibm_is_subnet.satellite_subnet[0].id, ibm_is_subnet.satellite_subnet[1].id, ibm_is_subnet.satellite_subnet[2].id]
 
+  create_ign_files = var.create_ign_files ? 1 : 0
+
   sg_rules = [
     for r in local.rules : {
       name       = r.name
@@ -130,7 +132,7 @@ locals {
     for i, host in var.worker_hosts : i => {
       instance_type     = host.instance_type
       count             = 1
-      for_control_plane = false
+      for_worker_node   = true
       node_type         = host.node_type
       zone              = host.zone
       host_number       = host.host_number

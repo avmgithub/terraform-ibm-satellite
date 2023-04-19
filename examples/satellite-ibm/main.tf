@@ -39,7 +39,7 @@ resource "ibm_resource_instance" "location_cos_instance" {
 }
 
 resource "ibm_cos_bucket" "location_cos_bucket_standard" {
-  bucket_name           = "${var.is_prefix}-location-cos-bucket-standard-2"
+  bucket_name           = "${var.is_prefix}-location-cos-bucket-standard-3"
   resource_instance_id  = ibm_resource_instance.location_cos_instance.id
 #  cross_region_location = var.COS_REGION
   region_location 	    = var.ibm_region

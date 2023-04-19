@@ -53,6 +53,11 @@ variable "is_location_exist" {
   default     = false
 }
 
+variable "create_ign_files" {
+  description = "Determines if the ign files are created or not"
+  type        = bool
+  default     = false
+}
 variable "host_labels" {
   description = "Labels to add to attach host script"
   type        = list(string)
@@ -221,6 +226,14 @@ variable "worker_image" {
   type        = string
   default     = "ibm-redhat-7-9-minimal-amd64-3"
 }
+
+variable "worker_image_id" {
+  description = "Operating system image for the workers created"
+  type        = string
+  default     = "r014-f2a01e12-4f06-409a-a565-03c278771922"
+}
+
+
 ##################################################
 # IBMCLOUD ROKS Cluster Variables
 ##################################################
@@ -244,7 +257,13 @@ variable "cluster" {
 
 variable "kube_version" {
   description = "Satellite Kube Version"
-  default     = "4.9.54_openshift"
+  default     = "4.10.47_openshift"
+}
+
+variable "operating_system" {
+  type        = string
+  description = "Satellite Kube Version"
+  default     = "RHCOS"
 }
 
 variable "worker_count" {

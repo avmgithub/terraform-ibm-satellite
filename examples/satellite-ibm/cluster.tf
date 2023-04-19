@@ -26,6 +26,7 @@ module "satellite-cluster" {
   create_timeout             = var.create_timeout
   update_timeout             = var.update_timeout
   delete_timeout             = var.delete_timeout
+  operating_system           = var.operating_system
 }
 
 ###################################################################
@@ -41,6 +42,7 @@ module "satellite-cluster-worker-pool" {
   create_cluster_worker_pool = var.create_cluster_worker_pool
   worker_pool_name           = var.worker_pool_name
   cluster                    = var.cluster
+  operating_system           = var.operating_system
   zones                      = var.location_zones
   resource_group             = var.resource_group
   kube_version               = var.kube_version

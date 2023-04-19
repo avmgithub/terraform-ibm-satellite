@@ -7,8 +7,12 @@ data "ibm_resource_group" "resource_group" {
   name = var.resource_group
 }
 
+# data "ibm_is_image" "rhel" {
+#   name = var.worker_image
+# }
+
 data "ibm_is_image" "rhel" {
-  name = var.worker_image
+  identifier = var.worker_image_id
 }
 
 resource "ibm_is_vpc" "satellite_vpc" {
@@ -81,6 +85,8 @@ resource "ibm_is_instance" "ibm_host" {
   profile        = each.value.instance_type
   keys           = [var.ssh_key_id != null ? var.ssh_key_id : ibm_is_ssh_key.satellite_ssh[0].id]
   resource_group = data.ibm_resource_group.resource_group.id
+#  user_data      = data.local_file.attach_host_ign[0].content
+#  user_data      = data.ibm_satellite_attach_host_script.wn_script.host_script
   user_data      = module.satellite-location.host_script
 
   primary_network_interface {
@@ -88,13 +94,13 @@ resource "ibm_is_instance" "ibm_host" {
   }
 }
 
-# resource "ibm_is_floating_ip" "satellite_ip" {
-#   for_each = local.hosts_flattened
+resource "ibm_is_floating_ip" "satellite_ip" {
+  for_each = local.hosts_flattened
 
-#   name           = "${var.is_prefix}-fip-${each.key}"
-#   target         = ibm_is_instance.ibm_host[each.key].primary_network_interface[0].id
-#   resource_group = data.ibm_resource_group.resource_group.id
-# }
+  name           = "${var.is_prefix}-fip-${each.key}"
+  target         = ibm_is_instance.ibm_host[each.key].primary_network_interface[0].id
+  resource_group = data.ibm_resource_group.resource_group.id
+}
 
 
 data "ibm_satellite_attach_host_script" "wn_script" {
@@ -114,8 +120,9 @@ resource "ibm_is_instance" "ibm_worker_host" {
   profile        = each.value.instance_type
   keys           = [var.ssh_key_id != null ? var.ssh_key_id : ibm_is_ssh_key.satellite_ssh[0].id]
   resource_group = data.ibm_resource_group.resource_group.id
-  user_data      = data.ibm_satellite_attach_host_script.wn_script.host_script
-
+  # user_data      = data.local_file.attach_host_ign[0].content
+  # user_data      = data.ibm_satellite_attach_host_script.wn_script.host_script
+  user_data      = module.satellite-location.host_script
   primary_network_interface {
     subnet = element(local.subnet_ids, "${each.value.zone}"-1)
   }

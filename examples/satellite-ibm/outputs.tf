@@ -15,6 +15,10 @@ output "host_ids" {
   value = [for host in ibm_is_instance.ibm_host : host.id]
 }
 
+output "host_script_ssh" {
+  value = data.local_file.attach_host_ign[0].content
+}
+
 # output "floating_ip_ids" {
 #   value = [for ip in ibm_is_floating_ip.satellite_ip : ip.id]
 # }
