@@ -55,5 +55,5 @@ module "satellite-host-wn" {
   host_labels    = (each.value.additional_labels != null ? each.value.additional_labels : var.host_labels)
   host_provider  = "ibm"
   zone = each.value.zone
-  depends_on = [module.satellite-cluster]
+  depends_on = [module.satellite-cluster, ibm_is_instance.ibm_worker_host]
 }

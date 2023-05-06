@@ -80,7 +80,7 @@ resource "ibm_is_instance" "ibm_host" {
   depends_on     = [module.satellite-location.satellite_location]
   name           = "${var.is_prefix}-${each.value.node_type}-${each.value.host_number}"
   vpc            = ibm_is_vpc.satellite_vpc.id
-  zone           = element(local.zones, each.value.zone)
+  zone           = element(local.zones, "${each.value.zone}"-1)
   image          = data.ibm_is_image.rhel.id
   profile        = each.value.instance_type
   keys           = [var.ssh_key_id != null ? var.ssh_key_id : ibm_is_ssh_key.satellite_ssh[0].id]
@@ -110,13 +110,12 @@ data "ibm_satellite_attach_host_script" "wn_script" {
 }
 
 resource "ibm_is_instance" "ibm_worker_host" {
-  #for_each = local.hosts_wn
   for_each = var.worker_hosts
 
   depends_on     = [module.satellite-location.satellite_location]
   name           = "${var.is_prefix}-${each.value.node_type}-${each.value.host_number}"
   vpc            = ibm_is_vpc.satellite_vpc.id
-  zone           = element(local.zones, each.value.zone)
+  zone           = element(local.zones, "${each.value.zone}"-1)
   image          = data.ibm_is_image.rhel.id
   profile        = each.value.instance_type
   keys           = [var.ssh_key_id != null ? var.ssh_key_id : ibm_is_ssh_key.satellite_ssh[0].id]
